@@ -22,6 +22,14 @@ def get_wp_dir():
     except:
         raise
 
+def get_wp_files():
+    wp_dir=get_wp_dir()
+    types=('*.jpg','*.jpeg','*.png')
+    files=[]
+    for t in types:
+        files.extend(glob.glob(wp_dir+'/'+t))
+    return files
+
 ###############################################################################
 # ADD image files to your wallpaper directory and processes colors
 # TODO check for file input type
@@ -41,11 +49,7 @@ def change(args):
 ###############################################################################
 # LIST all wallpapers in collection
 def list(args):
-    wp_dir=get_wp_dir()
-    types=('*.jpg','*.jpeg','*.png')
-    files=[]
-    for t in types:
-        files.extend(glob.glob(wp_dir+'/'+t))
+    files=get_wp_files()
 
     if(args.a):
         print '\n'.join(files)
@@ -54,8 +58,17 @@ def list(args):
 
 ###############################################################################
 # REMOVE a wallpaper from your collection
+# TODO autocomplete?
 def remove(args):
-    print args # placeholder
+    for a in args.arg:
+        files=get_wp_files()
+        for f in files:
+            if os.path.basename(f) == a:
+                os.remove(os.path.abspath(f))
+                # color files for <img> are /.<img>.<format>
+                for c in glob.glob(get_wp_dir()+'/.'+a+'*'): 
+                    os.remove(os.path.abspath(c))
+                break    
 
 ##############################################################################
 # top-level parser
