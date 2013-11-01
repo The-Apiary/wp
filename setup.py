@@ -1,11 +1,20 @@
 #! /usr/bin/env python
 
+import sys, os
 from distutils.core import setup
+import wp 
 
-setup(name='wp',
-      version='0.1.0',
-      description='Wallpaper Manager',
-      package_dir={'wp': 'lib'},
-      packages=['wp'],
-      scripts=['scripts/wp']
-     )
+long_description=open('README.md').read()
+
+setup_args = dict(
+    name='wp',
+    version=wp.__version__,
+    description='Wallpaper Manager',
+    author='Caleb Everett',
+    url='http://github.com/The-Apiary/wp',
+    packages=['wp','wp.cluster','wp.io','wp.model','wp.gui'],
+    scripts=['scripts/wp'],
+)
+
+if __name__ == '__main__':
+    setup(**setup_args)

@@ -7,7 +7,6 @@ if len(sys.argv) < 2:
   print "Usage: {0} FILENAME [num_colors]".format(sys.argv[0])
   sys.exit()
 
-
 print sys.argv[1]
 
 WALLPAPER = sys.argv[1]
