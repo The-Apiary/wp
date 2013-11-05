@@ -1,41 +1,18 @@
+"""@package wp
+Wallpaper is a python module which facilitates desktop wallpaper management
+from the command line.  Wallpaper also contains a submodule for image-based
+color palette generation.
+""" 
+
 # import wp modules
 from wp.cluster import *
 from wp.model import *
 from wp.io import *
 from wp.gui import *
-
-# import deps
-import os
-import shutil
-import errno
-import glob
+from wp.util import *
 
 # Version string.  Imported by setup.py :)
 __version__="0.1.0"
-
-def mkdir_p(path):
-    try:
-        os.makedirs(path)
-    except OSError as exc: # Python >2.5
-        if exc.errno == errno.EEXIST and os.path.isdir(path):
-            pass
-        else: raise
-
-def get_wp_dir():
-    wallpapers_dir=os.getenv('WALLPAPERS_DIR', os.environ['HOME']+'/.wallpapers')
-    try:
-        mkdir_p(wallpapers_dir)
-        return wallpapers_dir
-    except:
-        raise
-
-def get_wp_files():
-    wp_dir=get_wp_dir()
-    types=('*.jpg','*.jpeg','*.png')
-    files=[]
-    for t in types:
-        files.extend(glob.glob(wp_dir+'/'+t))
-    return files
 
 ###############################################################################
 # ADD image files to your wallpaper directory and processes colors
