@@ -10,6 +10,7 @@ from wp.model import *
 from wp.io import *
 from wp.gui import *
 from wp.util import *
+from wp.palette import *
 
 # Version string.  Imported by setup.py :)
 __version__="0.1.0"
