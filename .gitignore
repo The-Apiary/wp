@@ -1,5 +1,6 @@
 # ignore git files
 *.swp
+*~
 *.swo
 *.pyc
 .current
