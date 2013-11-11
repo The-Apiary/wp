@@ -12,9 +12,9 @@ setup_args = dict(
     description='Wallpaper Manager',
     author='Caleb Everett',
     url='http://github.com/The-Apiary/wp',
-    packages=['wp','wp.cluster','wp.io','wp.model','wp.gui'],
+    packages=['wp','wp.palette'],
     scripts=['scripts/wp'],
-)
+ )
 
 if __name__ == '__main__':
     setup(**setup_args)
