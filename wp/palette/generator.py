@@ -231,5 +231,3 @@ class PaletteGenerator:
         ax.set_zlabel('Blue')
 
         plt.show()
-        if self.verbose:
-            print "[DONE]"
