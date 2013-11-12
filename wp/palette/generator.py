@@ -111,7 +111,7 @@ class PaletteGenerator:
             best_eps = 8
 
             n = 1.0 # number of std deviations
-            mean,std = colorDistribution(256/best_eps)
+            mean,std = self.colorDistribution(256/best_eps)
 
             best_min_samples = mean + n * std
             best_metric = 'euclidean'
