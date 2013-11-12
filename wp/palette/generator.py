@@ -152,7 +152,7 @@ class PaletteGenerator:
     def load(self, path):
         """load image from path"""
         self.src_=os.path.abspath(path)
-        self.image_=Image.open(self.src_)
+        self.image_=Image.open(self.src_).convert("RGB")
         self.__extractColors()
 
     def resize(self, size):
