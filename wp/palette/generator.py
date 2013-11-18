@@ -8,7 +8,8 @@ import os                   # for abspath
 from PIL import Image
 from sklearn.cluster import *
 from mpl_toolkits.mplot3d import Axes3D
-import matplotlib.pyplot as plt    
+import matplotlib.pyplot as plt
+from math import sqrt
 
 class PaletteGenerator:
     """The palette generator class takes an image and maintains the resources
@@ -108,11 +109,12 @@ class PaletteGenerator:
     def __DBSCAN(self, args=None):
         """cluster color data using the DBSCAN algorithm"""
         if args == None:
-            best_eps = 8
 
-            n = 1.0 # number of std deviations
-            mean,std = self.colorDistribution(256/best_eps)
+            winsize = 8
+            n = 0.8 # number of std deviations
+            mean,std = self.colorDistribution(256/winsize)
 
+            best_eps = max(1,winsize / sqrt(2)) # box length to circle radius 
             best_min_samples = mean + n * std
             best_metric = 'euclidean'
             best_random_state = np.random
@@ -157,7 +159,7 @@ class PaletteGenerator:
 
     def resize(self, size):
         """resize image"""
-        self.image_.thumbnail(size, Image.ANTIALIAS)
+        self.image_.thumbnail(size) #, Image.ANTIALIAS)
         self.__extractColors()
 
     def partitionColors(self, alg, args=None):
