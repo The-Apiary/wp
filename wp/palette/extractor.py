@@ -1,5 +1,5 @@
 """@package wp.palette
-Palette generation scripts
+@file extractor.py
 """
 
 import numpy as np
@@ -11,13 +11,12 @@ from mpl_toolkits.mplot3d import Axes3D
 import matplotlib.pyplot as plt
 from math import sqrt
 
-class PaletteGenerator:
-    """The palette generator class takes an image and maintains the resources
-    used for deconstruction, partitioning, and palette selection. """
+class Extractor:
+    """The color extractor class takes an image and extracts the dominant 
+    colors, utilizing a variety of clustring and computer vision algorithms"""
 
     # public
     colors = []             # colors extracted from image
-    palette = []            # dominant colors from image
 
     # private-ish
     src_ = None             # string used to load image
@@ -30,7 +29,8 @@ class PaletteGenerator:
     def __init__(self, verbosity=0):
         self.verbosity_=verbosity
 
-    def __extractColors(self):
+    def __readColorsFromImage(self):
+        """extracts colors from the loaded image."""
         w,h = self.image_.size
         colors = []
         for n,c in self.image_.getcolors(w*h):
@@ -39,7 +39,9 @@ class PaletteGenerator:
      
         self.colors = colors
 
-    def __extractCentroids(self):
+    def __calculateClusterCentroids(self):
+        """given n clusters, calculates n centroids (means) of all samples per
+        cluster."""
         centroids = []
         for cl in self.clusters_:
             mean = [0,0,0]
@@ -53,22 +55,11 @@ class PaletteGenerator:
 
         self.centroids_ = centroids
 
-    def colorSpread(self, nbins):
-        bins = [False for i in range(nbins*nbins*nbins)]
-        for c in self.colors:
-            x = min(c[0]*nbins/255, nbins-1)
-            y = min(c[1]*nbins/255, nbins-1)
-            z = min(c[2]*nbins/255, nbins-1)
-            bins[x + y*nbins + z*nbins*nbins] = True
-
-        filled = 0
-        for b in bins:
-            if b == True:
-                filled += 1
-
-        return float(filled)/len(bins)
-
     def colorDistribution(self, nbins=16):
+        """calculates the average density of samples per voxel at a specified
+        granularity.  To get a more accurate estimate, coarse voxelizing is 
+        applied and density is calculated on the coarse voxelization using the
+        desired granularity.  Returns average and standard deviation. """
         if nbins < 2 or nbins % 2 != 0:
             print "colorDistribution expects an integer power of two > 2"
             return
@@ -126,7 +117,7 @@ class PaletteGenerator:
                 random_state = best_random_state,
             )
         else:
-            self.estimator_ = DBSCAN(**args)
+            selff.estimator_ = DBSCAN(**args)
     
     def __K_MEANS(self, args=None):
         """culster color data using the k-means algorithm"""
@@ -155,12 +146,12 @@ class PaletteGenerator:
         """load image from path"""
         self.src_=os.path.abspath(path)
         self.image_=Image.open(self.src_).convert("RGB")
-        self.__extractColors()
+        self.__readColorsFromImage()
 
     def resize(self, size):
         """resize image"""
         self.image_.thumbnail(size) #, Image.ANTIALIAS)
-        self.__extractColors()
+        self.__readColorsFromImage()
 
     def partitionColors(self, alg, args=None):
         """partitions image colors"""
@@ -197,9 +188,11 @@ class PaletteGenerator:
             print(':: n_clusters = %d' % len(self.clusters_))
 
         # step four: extract centroids from partitions
-        self.__extractCentroids()
+        self.__calculateClusterCentroids()
 
     def showColors(self):
+        """renders all color samples in RGB space.  WARNING: HIGH RESOLUTION
+        IMAGERY GENERATES MANY SAMPLES, MAY RUN SLOWLY.  RESIZE TO AVOID."""
         fig = plt.figure()
         ax = fig.add_subplot(111, projection='3d')
         for c in self.colors:
@@ -213,6 +206,8 @@ class PaletteGenerator:
         plt.show()
 
     def showPartitions(self):
+        """renders all color samples in clusters.  WARNING: HIGH RESOLUTION
+        IMAGERY GENERATES MANY SAMPLES, MAY RUN SLOWLY.  RESIZE TO AVOID."""
         fig = plt.figure()
         ax = fig.add_subplot(111, projection='3d')
         labels = list(set(self.estimator_.labels_))
